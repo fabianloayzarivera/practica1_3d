@@ -84,13 +84,18 @@ int main() {
 
 	};
 
-	std::vector<uint32_t> indexes = {};
+	std::vector<uint32_t> indexes = {0,1,2};
 
 	// store triangle in vram
 	std::shared_ptr<Buffer> buffer(new Buffer(vertices, indexes));
 	
 	
 	// main loop
+	glm::mat4 proj  = glm::mat4();
+	glm::mat4 view  = glm::mat4();
+	glm::mat4 model = glm::mat4();
+	glm::mat4 mvp   = glm::mat4();
+
 	double lastTime = glfwGetTime();
 	while ( !glfwWindowShouldClose(win) && !glfwGetKey(win, GLFW_KEY_ESCAPE) ) {
 		// get delta time
@@ -110,7 +115,24 @@ int main() {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		//// draw with vertex arrays & vbos
-		buffer->draw(*shader);
+		proj = glm::perspective(glm::radians(90.0f), (float)(screenWidth/screenHeight), 0.1f, 100.0f);
+		view = glm::lookAt(glm::vec3(0, 0, 6), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
+		
+		int x = -3;
+		int y = 0;
+		int z = 0;
+		for (int i = 0; i < 3; i++) 
+		{
+			//model = glm::translate(model, glm::vec3(-3, 0, 0));
+			model = glm::rotate(model, glm::radians(32.0f)* deltaTime, glm::vec3(0, 1, 0));			
+			mvp = proj * view * model;
+			shader->setMatrix(shader->getLocation("mvp"), mvp);
+			buffer->draw(*shader);
+			x += 3;
+			z -= 3;
+
+		}
+		
 
 		// refresh screen
 		glfwSwapBuffers(win);

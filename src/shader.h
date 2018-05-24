@@ -10,7 +10,7 @@ private:
 	std::string fragmentShaderSource;
 	int vPosLoc;
 	int vColorLoc;
-
+	glm::mat4 mvp;
 
 public:
 
@@ -31,14 +31,14 @@ public:
 	void		setupAttribs() const;
 
 	// Obtiene la localización de una variable uniform
-	int		getLocation(const char* name) const {}
+	int		getLocation(const char* name) const { return glGetUniformLocation(program, name); }
 
 	// Da valor a una variable uniform
 	void		setInt(int loc, int val) { if(loc != -1) glUniform1i(loc, val); }
 	void		setFloat(int loc, float val) { if (loc != -1) glUniform1f(loc, val); }
 	void		setVec3(int loc, const glm::vec3& vec) { if (loc != -1) glUniform3f(loc, vec.x, vec.y, vec.z); }
 	void		setVec4(int loc, const glm::vec4& vec) { if (loc != -1) glUniform4f(loc, vec.x, vec.y, vec.z, vec.w); }
-	//void		setMatrix(int loc, const glm::mat4& matrix) { if(loc != -1) glUniformMatrix4fv(loc, matrix.length, false, 0); }
+	void		setMatrix(int loc, const glm::mat4& matrix) { if(loc != -1) glUniformMatrix4fv(loc, 1, GL_FALSE, glm::value_ptr(matrix)); }
 
 };
 

@@ -11,7 +11,7 @@ Buffer::Buffer(std::vector<Vertex> vertex, std::vector<uint32_t> indexes)
 	//INDEXES
 	glGenBuffers(1, &indexBuffer);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(int) * indexes.size(), indexes.data(), GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint32_t) * indexes.size(), indexes.data(), GL_STATIC_DRAW);
 
 
 }
