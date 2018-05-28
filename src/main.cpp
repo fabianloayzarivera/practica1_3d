@@ -23,9 +23,26 @@ std::string readString(const std::string& filename) {
 	return std::string(chars.data(), chars.size());
 }
 
+bool init() 
+{
+
+	// initialize opengl extensions
+	if (glewInit() != GLEW_OK) {
+		std::cout << "could not initialize opengl extensions" << std::endl;
+		glfwTerminate();
+		return false;
+	}
+
+	// initialize opengl states
+	glEnable(GL_SCISSOR_TEST);
+	glEnable(GL_DEPTH_TEST);
+
+	return true;
+}
 int main() {
+	
 	// init glfw
-	if ( !glfwInit() ) {
+	if (!glfwInit()) {
 		std::cout << "could not initialize glfw" << std::endl;
 		return -1;
 	}
@@ -41,17 +58,15 @@ int main() {
 	}
 	glfwMakeContextCurrent(win);
 
-	// initialize opengl extensions
-	if ( glewInit() != GLEW_OK ) {
-		std::cout << "could not initialize opengl extensions" << std::endl;
-		glfwTerminate();
+	if(!init()){
+		std::cout << "Error Initializing Engine" << std::endl;
 		return -1;
 	}
+		
 
 	// load shaders code
 	std::string vertexShaderSource = readString("data/vertex.glsl");
 	std::string fragmentShaderSource = readString("data/fragment.glsl");
-
 	
 	std::shared_ptr<Shader> shader(new Shader(vertexShaderSource, fragmentShaderSource));
 
@@ -63,10 +78,6 @@ int main() {
 	}
 
 	shader->use();
-	
-	// initialize opengl states
-	glEnable(GL_SCISSOR_TEST);
-	glEnable(GL_DEPTH_TEST);
 
 	glm::vec3 v1( 0,  0.5, 0);
 	glm::vec3 v2(-0.5, -0.5, 0);
