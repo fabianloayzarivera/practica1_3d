@@ -20,9 +20,6 @@ void Buffer::draw(const Shader& shader) const
 {
 	
 	shader.setupAttribs();
-
-	// draw with vertex arrays & vbos
-	//glDrawArrays(GL_TRIANGLES, 0, vertices.size());
 	glDrawArrays(GL_TRIANGLES, 0, 3);
 }
 

@@ -59,7 +59,6 @@ int main() {
 	{
 		glDeleteProgram(shader->getId());
 		glfwTerminate();
-		/*delete(shader);*/
 		return -1;	
 	}
 
@@ -67,13 +66,14 @@ int main() {
 	
 	// initialize opengl states
 	glEnable(GL_SCISSOR_TEST);
+	glEnable(GL_DEPTH_TEST);
 
-	glm::vec3 v1( 0,  1, 0);
-	glm::vec3 v2(-1, -1, 0);
-	glm::vec3 v3(1, -1, 0);
-	glm::vec4 c1( 1,  0, 0, 1);	
-	glm::vec4 c2( 0,  1, 0, 1);
-	glm::vec4 c3( 0,  0, 1, 1);
+	glm::vec3 v1( 0,  0.5, 0);
+	glm::vec3 v2(-0.5, -0.5, 0);
+	glm::vec3 v3(0.5, -0.5, 0);
+	glm::vec4 c1( 1,  1, 1, 1);	
+	glm::vec4 c2( 1,  1, 1, 1);
+	glm::vec4 c3( 1,  1, 1, 1);
 
 	// define triangle
 	std::vector<Vertex> vertices = {
@@ -93,8 +93,10 @@ int main() {
 	// main loop
 	glm::mat4 proj  = glm::mat4();
 	glm::mat4 view  = glm::mat4();
-	glm::mat4 model = glm::mat4();
+	glm::mat4 model = glm::mat4(1.0f);
 	glm::mat4 mvp   = glm::mat4();
+	float angle = 0;
+	float angleVariation = 32.0f;
 
 	double lastTime = glfwGetTime();
 	while ( !glfwWindowShouldClose(win) && !glfwGetKey(win, GLFW_KEY_ESCAPE) ) {
@@ -115,34 +117,34 @@ int main() {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		//// draw with vertex arrays & vbos
-		proj = glm::perspective(glm::radians(90.0f), (float)(screenWidth/screenHeight), 0.1f, 100.0f);
+		proj = glm::perspective(glm::radians(45.0f), ((float)SCREEN_WIDTH / (float)SCREEN_HEIGHT), 0.1f, 100.0f);
 		view = glm::lookAt(glm::vec3(0, 0, 6), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
 		
+		angle += angleVariation * deltaTime;
 		int x = -3;
 		int y = 0;
 		int z = 0;
+
 		for (int i = 0; i < 3; i++) 
 		{
-			//model = glm::translate(model, glm::vec3(-3, 0, 0));
-			model = glm::rotate(model, glm::radians(32.0f)* deltaTime, glm::vec3(0, 1, 0));			
-			mvp = proj * view * model;
-			shader->setMatrix(shader->getLocation("mvp"), mvp);
-			buffer->draw(*shader);
-			x += 3;
-			z -= 3;
-
-		}
-		
+			z = 0;
+			for (int j = 0; j < 3; j++) 
+			{
+				model = glm::translate(glm::mat4(1.0f), glm::vec3(x, y, z));
+				model = glm::rotate(model, glm::radians(angle), glm::vec3(0, 1, 0));
+				mvp = proj * view * model;
+				shader->setMatrix(shader->getLocation("mvp"), mvp);
+				buffer->draw(*shader);
+				z -= 3;
+			}			
+			x += 3;			
+		}	
 
 		// refresh screen
 		glfwSwapBuffers(win);
 		glfwPollEvents();
 	}
 
-	// shutdown	
 	glfwTerminate();
-	//glDeleteProgram(shader->getId());
-	//glDeleteBuffers(1, &vertexBuffer);
-	
-	/*delete(shader);*/
+
 }
